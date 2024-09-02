@@ -6,6 +6,11 @@ from .classfile import ClassFile
 from .classfileformat.reader import Reader
 from .error import ClassLoaderError
 
+emitted_cls_refs = set([
+    'java/lang/Object', 'java/lang/Enum', 'java/lang/Record',
+    'java/lang/String', 'java/lang/Class'
+])
+
 class Environment(object):
     def __init__(self):
         self.classes = {}
@@ -16,7 +21,10 @@ class Environment(object):
         self.path.append(path)
 
     def _getSuper(self, name):
-        return self.getClass(name).supername
+        try:
+            return self.getClass(name).supername
+        except ClassLoaderError:
+            return 'java/lang/Object'
 
     def getClass(self, name, partial=False):
         try:
@@ -53,10 +61,10 @@ class Environment(object):
             class_ = self.getClass(name, partial=True)
             return 'INTERFACE' in class_.flags
         except ClassLoaderError as e:
-            if forceCheck:
-                raise e
+            # if forceCheck:
+            #     raise e
             # If class is not found, assume worst case, that it is a interface
-            return True
+            return name not in emitted_cls_refs
 
     def isFinal(self, name):
         try:
@@ -84,11 +92,12 @@ class Environment(object):
                     pass
 
     def _loadClass(self, name):
-        print("Loading", name[:70])
         data = self._searchForFile(name)
 
         if data is None:
             raise ClassLoaderError('ClassNotFoundException', name)
+
+        print("Loading", name[:70])
 
         stream = Reader(data=data)
         new = ClassFile(stream)
