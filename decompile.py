@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 
 import os.path
@@ -98,7 +98,7 @@ def decompileClass(path=[], targets=None, outpath=None, skip_errors=False, add_t
             print('processing target {}, {} remaining'.format(target, len(targets)-i))
 
             try:
-                c = e.getClass(target.decode('utf8'))
+                c = e.getClass(target)
                 makeGraphCB = functools.partial(makeGraph, magic_throw)
                 source = printer.visit(javaclass.generateAST(c, makeGraphCB, skip_errors, add_throws=add_throws))
             except Exception as err:

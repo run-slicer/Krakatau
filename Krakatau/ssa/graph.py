@@ -597,7 +597,7 @@ class SSA_Graph(object):
         for block in self.blocks[:]:
             if block is self.entryBlock:
                 continue
-            types = set(zip(*block.predecessors)[1])
+            types = set(list(zip(*block.predecessors))[1])
             if len(types) <= 1:
                 continue
             assert not isinstance(block.jump, (ssa_jumps.Return, ssa_jumps.Rethrow))
