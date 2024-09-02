@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 map = lambda *args: list(__builtins__.map(*args))
 
 import ast
@@ -164,7 +164,7 @@ def _disassemble(contents, roundtrip):
 
 def _assemble(disassembled):
     assembled = collections.OrderedDict()
-    for name, source in disassembled.items():
+    for name, source in list(disassembled.items()):
         for name2, data in assemble.assembleSource(source, name, fatal=True):
             assert name == name2
             assembled[name.decode('utf8')] = data
@@ -178,20 +178,20 @@ def runDisassemblerTest(disonly, basedir, target, testcases):
     # roundtrip test
     disassembled = _disassemble(contents, True)
     assembled = _assemble(disassembled)
-    for name, classfile in contents.items():
+    for name, classfile in list(contents.items()):
         assert classfile == assembled[name]
 
     # non roundtrip
     disassembled = _disassemble(contents, False)
     assembled = _assemble(disassembled)
-    for name, classfile in contents.items():
+    for name, classfile in list(contents.items()):
         assert len(classfile) >= len(assembled[name])
 
     if not disonly:
         if isjar:
             new_fname = os.path.join(tdir, target + '.jar')
             with script_util.JarWriter(new_fname, '.class') as out:
-                for cname, data in assembled.items():
+                for cname, data in list(assembled.items()):
                     out.write(cname, data)
         else:
             # new_fname = os.path.join(tdir, target + '.class')
@@ -279,12 +279,12 @@ if __name__ == '__main__':
             raise RuntimeError('Unable to locate rt.jar')
 
         for target, testcases in filter(target_filter, sorted(tests.decompiler.registry.items())):
-            testlist.append(('decompiler', target, map(tuple, testcases), jrepath))
+            testlist.append(('decompiler', target, list(map(tuple, testcases)), jrepath))
     if do_disassemble:
         for target, testcases in filter(target_filter, sorted(tests.disassembler.registry.items())):
-            testlist.append(('disassembler', False, dis_class_location, target, map(tuple, testcases)))
+            testlist.append(('disassembler', False, dis_class_location, target, list(map(tuple, testcases))))
         for target, testcases in filter(target_filter, sorted(tests.decompiler.registry.items())):
-            testlist.append(('disassembler', False, dec_class_location, target, map(tuple, testcases)))
+            testlist.append(('disassembler', False, dec_class_location, target, list(map(tuple, testcases))))
 
         for fname in os.listdir(dis2_class_location):
             target = fname.rpartition('.')[0]

@@ -3,7 +3,7 @@ ok_chars =  " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcd
 ok_chars = frozenset(ok_chars)
 
 # these characters cannot use unicode escape codes due to the way Java escaping works
-late_escape = {u'\u0009':r'\t', u'\u000a':r'\n', u'\u000d':r'\r', u'\u0022':r'\"', u'\u005c':r'\\'}
+late_escape = {'\u0009':r'\t', '\u000a':r'\n', '\u000d':r'\r', '\u0022':r'\"', '\u005c':r'\\'}
 
 def escapeString(u):
     if set(u) <= ok_chars:

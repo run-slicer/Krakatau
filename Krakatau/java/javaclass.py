@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import struct
 
 from ..ssa import objtypes

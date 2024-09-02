@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-from __future__ import print_function
+
 
 import os.path
 import time, random, subprocess, functools
@@ -154,5 +154,5 @@ if __name__== "__main__":
         path.append(args.target)
 
     targets = script_util.findFiles(args.target, args.r, '.class')
-    targets = map(script_util.normalizeClassname, targets)
+    targets = list(map(script_util.normalizeClassname, targets))
     decompileClass(path, targets, args.out, args.skip, magic_throw=args.xmagicthrow)
