@@ -11,7 +11,7 @@ import zipfile
 
 # Various utility functions for the top level scripts (decompile.py, assemble.py, disassemble.py)
 
-copyright = '''Krakatau  Copyright (C) 2012-22  Robert Grosse
+copyright = '''Krakatau Copyright (C) 2012-25 Robert Grosse
 This program is provided as open source under the GNU General Public License.
 See LICENSE.TXT for more details.
 '''
@@ -147,13 +147,11 @@ class DirectoryWriter(object):
             if exc.errno != errno.EEXIST:
                 raise
 
-        mode = 'wb' if isinstance(data, bytes) else 'w'
-        try:
-            with open(out, mode) as f:
-                f.write(data)
-        except Exception:
-            with open(out, mode, encoding='utf8') as f:
-                f.write(data)
+        if isinstance(data, unicode):
+            data = data.encode('utf8')
+        with open(out, 'wb') as f:
+            f.write(data)
+
         return out
 
     def __enter__(self): return self

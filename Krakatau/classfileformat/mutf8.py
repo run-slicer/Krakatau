@@ -1,4 +1,8 @@
 import re
+import sys
+
+if sys.version_info[0] > 2:
+    unichr = chr
 
 # First alternative handles a single surrogate, in case input string somehow contains unmerged surrogates
 NONASTRAL_REGEX = re.compile('[\ud800-\udfff]|[\0-\ud7ff\ue000-\uffff]+')
@@ -13,16 +17,15 @@ def encode(s):
             x -= 1<<16
             high = 0xD800 + (x >> 10)
             low = 0xDC00 + (x % (1 << 10))
-            b += chr(high).encode('utf8')
-            b += chr(low).encode('utf8')
+            b += unichr(high).encode('utf8', errors='surrogatepass')
+            b += unichr(low).encode('utf8', errors='surrogatepass')
             pos += 1
         else:
             m = NONASTRAL_REGEX.match(s, pos)
-            b += m.group().encode('utf8')
+            b += m.group().encode('utf8', errors='surrogatepass')
             pos = m.end()
     return b.replace(b'\0', b'\xc0\x80')
 
-# Warning, decode(encode(s)) != s if s contains astral characters, as they are converted to surrogate pairs
 def decode(b):
     assert isinstance(b, bytes)
-    return b.replace(b'\xc0\x80', b'\0').decode('utf8')
+    return b.replace(b'\xc0\x80', b'\0').decode('utf8', errors='surrogatepass')
